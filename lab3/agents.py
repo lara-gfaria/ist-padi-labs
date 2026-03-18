@@ -171,7 +171,20 @@ class TDAgent(Agent):
         Returns:
             tuple[int|float, ...]: Discretized state as a hashable tuple
         """
-        raise NotImplementedError
+
+        fish_y = state['fish_y']
+        bar_y = state['bar_y']
+        bar_vel = state['bar_vel']
+        
+        diff_y = fish_y - bar_y
+        
+        pos_bin_size = 20
+        vel_bin_size = 0.5
+        
+        discretized_diff = int(diff_y / pos_bin_size)
+        discretized_vel = int(bar_vel / vel_bin_size)
+        
+        return (discretized_diff, discretized_vel)  
 
     # ------------------------------------------------------------------
     # Q-value helpers
@@ -204,7 +217,19 @@ class TDAgent(Agent):
         Returns:
             bool: True to thrust, False to fall
         """
-        raise NotImplementedError
+
+        discrete_state = self.discretize_state(state)
+
+        if self.training and random.random() < self.epsilon:
+            return random.choice([True, False])
+
+        q_thrust = self.get_q_value(discrete_state, True)
+        q_fall = self.get_q_value(discrete_state, False)
+
+        if q_thrust == q_fall:
+            return random.choice([True, False])
+        
+        return q_thrust < q_fall
 
     # ------------------------------------------------------------------
     # Episode bookkeeping
@@ -281,8 +306,20 @@ class QLearningAgent(TDAgent):
         """
         if not self.training:
             return
+        
+        s = self.discretize_state(state)
+        s_next = self.discretize_state(next_state)
 
-        raise NotImplementedError
+        current_q = self.get_q_value(s, action)
+
+        if done:
+            target = reward
+        else:
+            min_next_q = min(self.get_q_value(s_next, True), 
+                             self.get_q_value(s_next, False))
+            target = reward + self.gamma * min_next_q
+
+        self.q_table[(s, action)] = current_q + self.alpha * (target - current_q)
 
 
 class SarsaLearningAgent(TDAgent):
@@ -310,4 +347,15 @@ class SarsaLearningAgent(TDAgent):
         if not self.training:
             return
 
-        raise NotImplementedError
+        s = self.discretize_state(state)
+        s_next = self.discretize_state(next_state)
+
+        current_q = self.get_q_value(s, action)
+
+        if done:
+            target = reward
+        else:
+            next_q = self.get_q_value(s_next, next_action)
+            target = reward + self.gamma * next_q
+
+        self.q_table[(s, action)] = current_q + self.alpha * (target - current_q)

@@ -123,8 +123,8 @@ if __name__ == "__main__":
     # Use classes instead of instances to re-initialize per run
     agent_classes = [
         ("PredictiveAgent", PredictiveAgent), # provides a baseline, it does not learn
-        #("Q-Learning", QLearningAgent),
-        #("SARSA", SarsaLearningAgent),
+        ("Q-Learning", QLearningAgent),
+        ("SARSA", SarsaLearningAgent),
     ]
 
     NUM_RUNS = 1 # while debugging, set to 1 
