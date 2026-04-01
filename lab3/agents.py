@@ -126,8 +126,8 @@ class TDAgent(Agent):
         self,
         alpha=0.1,  # Learning rate
         gamma=0.99,  # Discount factor
-        epsilon=0.1,  # Exploration rate
-        epsilon_decay=0.995,  # Epsilon decay per episode
+        epsilon=1,  # Exploration rate
+        epsilon_decay=0.998,  # Epsilon decay per episode
         epsilon_min=0.01,  # Minimum epsilon
     ):
         """
@@ -178,13 +178,13 @@ class TDAgent(Agent):
         
         diff_y = fish_y - bar_y
         
-        pos_bin_size = 20
+        pos_bin_size = 10
         vel_bin_size = 0.5
         
         discretized_diff = int(diff_y / pos_bin_size)
         discretized_vel = int(bar_vel / vel_bin_size)
-        
-        return (discretized_diff, discretized_vel)  
+            
+        return (discretized_diff, discretized_vel)
 
     # ------------------------------------------------------------------
     # Q-value helpers

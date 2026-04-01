@@ -143,6 +143,8 @@ if __name__ == "__main__":
         print(f"{'*' * 40}")
 
         for run in range(NUM_RUNS):
+            #np.random.seed(run)
+            
             print(f"--- {name} Run {run + 1}/{NUM_RUNS} ---")
             agent = AgentClass()
 
@@ -165,7 +167,7 @@ if __name__ == "__main__":
                 num_episodes=None,
                 do_learning=False,
                 verbose=(run == 0),
-                visualize=True, # change to False to remove the visualization
+                visualize=False, # change to False to remove the visualization
             )
 
             if test_stats:
